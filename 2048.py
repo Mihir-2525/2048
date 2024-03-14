@@ -30,13 +30,20 @@ def check_Vertical(x):
                 return True
 
 # Add a new element to the array
-def new_var(arr, size):
+def new_var(arr, size, difficulty):
     # Check if the array doesn't contain zero, then don't add any new elements
     while check(arr):
         # Set random dimensions
         x, y = random.randint(0, size-1), random.randint(0, size-1)
         if arr[x, y] == 0:
-            arr[x, y] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 8])
+            if difficulty == 1:
+                arr[x, y] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4])
+            elif difficulty == 2:
+                arr[x, y] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 8])
+            elif difficulty == 3:
+                arr[x, y] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 8])
+            elif difficulty == 2048:
+                arr[x, y] = 2048
             break
 
 # <---
@@ -145,7 +152,7 @@ def print_board(array):
         # ║       x       ║       x       ║       x       ║       x       ║
         for j in range(len(array)):
             print("║\t",end="")
-            print('_',end="") if array[i][j] == 0 else print(str(array[i][j]),end="")
+            print('',end="") if array[i][j] == 0 else print(str(array[i][j]),end="")
             print("\t",end="")
         print("║")
         # ║               ║               ║               ║               ║
@@ -166,17 +173,32 @@ def print_board(array):
     print("╝")
   
 def main():
-    # x is the size of the array (i.e., if x = 3, then 'a' makes a 3x3 array)
-    x = int(input("Enter the number of the box you want: "))
-    # Set the array (i.e., if x = 3, then 'a' makes a 3x3 empty (0) array)
-    a = np.zeros(x*x, dtype=np.int32).reshape(x, x)
-    new_var(a, x)
-    print_board(a)
+    # Set size of the array
+    size = int(input("Enter the number of the box you want: "))
+
+    # Set Difficulty
+    difficulty = 0
+    while difficulty not in [1, 2, 3, 2048]:
+        try:
+            difficulty = int(input("Enter the Level of difficulty of the game: \n1 : Hard\n2 : Medium\n3 : Easy\n\n"))
+            if difficulty in [1, 2, 3, 2048]:
+                break
+            else:
+                print("Invalid input. Please enter 1, 2, or 3.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+    print(f"Selected difficulty: {difficulty}")
+
+    # Set the array (i.e., if size = 3, then 'arr' makes a 3x3 empty (0) array)
+    arr = np.zeros(size*size, dtype=np.int32).reshape(size, size)
+
+    new_var(arr, size,difficulty)
+    print_board(arr)
     while True:
-        if (check(a) or check_Horizontal(a) or check_Vertical(a)):
-            if win(a):
+        if (check(arr) or check_Horizontal(arr) or check_Vertical(arr)):
+            if win(arr):
                 os.system("cls")
-                print_board(a)
+                print_board(arr)
                 print("╔═══╗╔═══╗╔═╗─╔╗╔═══╗╔═══╗╔═══╗╔════╗╔╗─╔╗╔╗───╔═══╗╔════╗╔══╗╔═══╗╔═╗─╔╗╔═══╗")
                 print("║╔═╗║║╔═╗║║║╚╗║║║╔═╗║║╔═╗║║╔═╗║║╔╗╔╗║║║─║║║║───║╔═╗║║╔╗╔╗║╚╣─╝║╔═╗║║║╚╗║║║╔═╗║")
                 print("║║─╚╝║║─║║║╔╗╚╝║║║─╚╝║╚═╝║║║─║║╚╝║║╚╝║║─║║║║───║║─║║╚╝║║╚╝─║║─║║─║║║╔╗╚╝║║╚══╗")
@@ -186,13 +208,13 @@ def main():
                 break
             key = keyboard.read_key().lower()
             if key == "w" or key == "up":
-                bottom_to_top(a, x)
+                bottom_to_top(arr, size)
             elif key == "s" or key == "down":
-                top_to_bottom(a, x)
+                top_to_bottom(arr, size)
             elif key == "a" or key == "left":
-                right_to_left(a, x)
+                right_to_left(arr, size)
             elif key == "d" or key == "right":
-                left_to_right(a, x)
+                left_to_right(arr, size)
             elif key == "x":
                 break
             else:
@@ -201,11 +223,11 @@ def main():
             # Set delay for the next move
             time.sleep(0.2)
             # Create a new variable
-            new_var(a, x)
+            new_var(arr, size, difficulty)
             # Clear the screen
             os.system("cls")
             # Print the updated box
-            print_board(a)
+            print_board(arr)
         else:
             print("╔╗──╔╗╔═══╗╔╗─╔╗   ╔╗───╔═══╗╔═══╗╔═══╗   ╔════╗╔╗─╔╗╔═══╗   ╔═══╗╔═══╗╔═╗╔═╗╔═══╗")
             print("║╚╗╔╝║║╔═╗║║║─║║   ║║───║╔═╗║║╔═╗║║╔══╝   ║╔╗╔╗║║║─║║║╔══╝   ║╔═╗║║╔═╗║║║╚╝║║║╔══╝")
