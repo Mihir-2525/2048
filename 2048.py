@@ -2,6 +2,7 @@ import numpy as np
 import random
 import keyboard
 import os
+import time
 
 # Return Check to user get 2048 Number  
 def win(arr):
@@ -102,7 +103,7 @@ def bottom_to_top(arr, size):
         merged_elements = merged_elements + [0] * (size - len(merged_elements))
         for i in range(size):
             arr[i][j] = merged_elements[i]
-    
+
 # |
 # V
 def top_to_bottom(arr, size):
@@ -142,7 +143,10 @@ def print_board(array):
             print("\t\t║",end="")
         print()
         # ║       x       ║       x       ║       x       ║       x       ║
-        for j in range(len(array)):print("║\t"+str(array[i][j])+"\t",end="")
+        for j in range(len(array)):
+            print("║\t",end="")
+            print('_',end="") if array[i][j] == 0 else print(str(array[i][j]),end="")
+            print("\t",end="")
         print("║")
         # ║               ║               ║               ║               ║
         print("║",end="")
@@ -163,7 +167,7 @@ def print_board(array):
   
 def main():
     # x is the size of the array (i.e., if x = 3, then 'a' makes a 3x3 array)
-    x = 4
+    x = int(input("Enter the number of the box you want: "))
     # Set the array (i.e., if x = 3, then 'a' makes a 3x3 empty (0) array)
     a = np.zeros(x*x, dtype=np.int32).reshape(x, x)
     new_var(a, x)
@@ -180,7 +184,7 @@ def main():
                 print("║╚═╝║║╚═╝║║║─║║║║╚╩═║║║║╚╗║╔═╗║──║║──║╚═╝║║╚═╝║║╔═╗║──║║──╔╣─╗║╚═╝║║║─║║║║╚═╝║")
                 print("╚═══╝╚═══╝╚╝─╚═╝╚═══╝╚╝╚═╝╚╝─╚╝──╚╝──╚═══╝╚═══╝╚╝─╚╝──╚╝──╚══╝╚═══╝╚╝─╚═╝╚═══╝")
                 break
-            key = keyboard.read_key()
+            key = keyboard.read_key().lower()
             if key == "w" or key == "up":
                 bottom_to_top(a, x)
             elif key == "s" or key == "down":
@@ -194,8 +198,13 @@ def main():
             else:
                 print('Invalid key')
                 continue
+            # Set delay for the next move
+            time.sleep(0.2)
+            # Create a new variable
             new_var(a, x)
+            # Clear the screen
             os.system("cls")
+            # Print the updated box
             print_board(a)
         else:
             print("╔╗──╔╗╔═══╗╔╗─╔╗   ╔╗───╔═══╗╔═══╗╔═══╗   ╔════╗╔╗─╔╗╔═══╗   ╔═══╗╔═══╗╔═╗╔═╗╔═══╗")
