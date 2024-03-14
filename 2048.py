@@ -3,6 +3,8 @@ import random
 import keyboard
 import os
 import time
+import xlsxwriter
+import openpyxl
 
 # Return Check to user get 2048 Number  
 def win(arr):
@@ -43,7 +45,7 @@ def new_var(arr, size, difficulty):
             elif difficulty == 3:
                 arr[x, y] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 8])
             elif difficulty == 2048:
-                arr[x, y] = 2048
+                arr[x, y] = random.choice([128,128,256])
             break
 
 # <---
@@ -172,10 +174,50 @@ def print_board(array):
         print("╩"+"═"*15,end="")
     print("╝")
   
-def main():
-    # Set size of the array
-    size = int(input("Enter the number of the box you want: "))
+def create_file(filename):
+    # Check if file exists, if not, create it
+    if not os.path.exists(filename):
+        workbook = xlsxwriter.Workbook(filename)
+        workbook.close()
 
+def main():
+    # Create File to Store Data
+    filename = 'data.xlsx'
+    
+    create_file(filename)
+
+    # Open the existing or newly created workbook
+    workbook = openpyxl.load_workbook(filename)
+
+    # Get the active worksheet
+    worksheet = workbook.active
+    
+    worksheet['B1'] = 'Difficulty Level'
+    worksheet['C1'] = 'Highest Score'
+    col = 'A'
+    row = 2
+    for i in range(15):
+        # Write data to the worksheet
+        # A
+        worksheet[col+str(row)] = str(row)+"x"+str(row)
+        # C
+        if (worksheet[chr(ord(col) + 2)+str(row)].value) == None:
+            worksheet[chr(ord(col) + 2)+str(row)] = 0
+        if (worksheet[chr(ord(col) + 2)+str(row)].value) > 0:
+            pass
+        else:
+            worksheet[chr(ord(col) + 2)+str(row)] = 0
+        row = row + 1
+    # Save the workbook
+    workbook.save(filename)
+    
+    # Set size of the array
+    size = 0
+    while size < 2 or size > 17:
+        try:
+            size = int(input("Enter the number of the box you want: "))
+        except ValueError:
+            print("Invalid input. Please enter a valid Size.")
     # Set Difficulty
     difficulty = 0
     while difficulty not in [1, 2, 3, 2048]:
@@ -189,11 +231,23 @@ def main():
             print("Invalid input. Please enter a valid number.")
     print(f"Selected difficulty: {difficulty}")
 
+    # Add the difficulty in Excel file
+    
+    # B
+    for i in range(15):
+        if difficulty == 1: d = 'High'
+        elif difficulty == 2: d = 'Medium'
+        elif difficulty == 3: d = 'Low'
+        else: d = 'Unknown'
+        worksheet['B'+str(size)].value = d
+        workbook.save(filename)
+
     # Set the array (i.e., if size = 3, then 'arr' makes a 3x3 empty (0) array)
     arr = np.zeros(size*size, dtype=np.int32).reshape(size, size)
 
     new_var(arr, size,difficulty)
     print_board(arr)
+
     while True:
         if (check(arr) or check_Horizontal(arr) or check_Vertical(arr)):
             if win(arr):
@@ -206,6 +260,31 @@ def main():
                 print("║╚═╝║║╚═╝║║║─║║║║╚╩═║║║║╚╗║╔═╗║──║║──║╚═╝║║╚═╝║║╔═╗║──║║──╔╣─╗║╚═╝║║║─║║║║╚═╝║")
                 print("╚═══╝╚═══╝╚╝─╚═╝╚═══╝╚╝╚═╝╚╝─╚╝──╚╝──╚═══╝╚═══╝╚╝─╚╝──╚╝──╚══╝╚═══╝╚╝─╚═╝╚═══╝")
                 break
+            
+            max_n = 0
+            for i in arr:
+                for j in i:
+                    if j > max_n: max_n = j
+
+            # Write the data to the file
+            try:
+                if max_n > worksheet['C'+str(size)].value:
+                    worksheet['C'+str(size)] = max_n
+                    workbook.save(filename)
+            except Exception:
+                worksheet['C'+str(size)] = max_n
+                workbook.save(filename)
+
+            # Open the workbook again to read the data
+            workbook = openpyxl.load_workbook(filename)
+
+            # Get the active worksheet
+            worksheet = workbook.active
+
+            # Read the value from cell B3
+            print("Highest Score is ",worksheet['C'+str(size)].value)
+            print("Current Score is ",max_n)
+
             key = keyboard.read_key().lower()
             if key == "w" or key == "up":
                 bottom_to_top(arr, size)
