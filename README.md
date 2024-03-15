@@ -14,6 +14,13 @@ This is a Python implementation of the popular game 2048.
 - Use arrow keys (up, down, left, right) or `W`, `S`, `A`, `D` keys to move tiles.
 - Press `X` key to exit the game.
 
+## Difficulty Levels
+
+- **High**: Tiles are mostly 2s with a 10% chance of a 4.
+- **Medium**: Tiles are 2s with an 80% chance, 4s with a 15% chance, and occasionally 8s with a 5% chance.
+- **Low**: Tiles are 2s with a 70% chance, 4s with a 23% chance, and occasionally 8s with a 7% chance.
+- **2048**: Tiles are either 128, 256, or sometimes 512.
+
 ## Dependencies
 
 - Python 3.x
@@ -22,6 +29,6 @@ This is a Python implementation of the popular game 2048.
 
 The goal of the game is to reach the 2048 tile by sliding numbered tiles on a grid. When two tiles with the same number touch, they merge into one, with the value of the sum of the two tiles. After each move, a new tile randomly appears on the grid. The game ends when the player reaches the 2048 tile or when there are no more valid moves.
 
-## Credits
+## High Score Tracking
 
-- Original game concept by Gabriele Cirulli
+The game tracks high scores for each difficulty level and stores them in an XLSX file named `data.xlsx`. The file contains the highest scores achieved for each difficulty level, allowing players to compete for the highest score.

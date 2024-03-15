@@ -136,54 +136,143 @@ def top_to_bottom(arr, size):
         for i in range(size):
             arr[i][j] = merged_elements[i]
 
-# Print data on console display
-def print_board(array):
-    # Print the game board
-    # ╔═══════════════╦═══════════════╦═══════════════╦═══════════════╗
-    print("╔"+"═"*15,end="")
-    for i in range(len(array)-1):
-        print("╦"+"═"*15,end="")
-    print("╗")
-    # Print single line
-    for i in range(len(array)):
-        # ║               ║               ║               ║               ║
-        print("║",end="")
-        for j in range(len(array)):
-            print("\t\t║",end="")
-        print()
-        # ║       x       ║       x       ║       x       ║       x       ║
-        for j in range(len(array)):
-            print("║\t",end="")
-            print('',end="") if array[i][j] == 0 else print(str(array[i][j]),end="")
-            print("\t",end="")
-        print("║")
-        # ║               ║               ║               ║               ║
-        print("║",end="")
-        for j in range(len(array)):
-            print("\t\t║",end="")
-        print()
-        # ╠═══════════════╬═══════════════╬═══════════════╬═══════════════╣
-        if not(i==len(array)-1):
-            print("╠"+"═"*15,end="")
-            for i in range(len(array)-1):
-                print("╬"+"═"*15,end="")
-            print("╣")
-    # ╚═══════════════╩═══════════════╩═══════════════╩═══════════════╝
-    print("╚"+"═"*15,end="")
-    for i in range(len(array)-1):
-        print("╩"+"═"*15,end="")
-    print("╝")
-  
+# Create Excel file to Store the data
 def create_file(filename):
     # Check if file exists, if not, create it
     if not os.path.exists(filename):
         workbook = xlsxwriter.Workbook(filename)
         workbook.close()
 
+# set default data into the workbook
+def default_workbook(worksheet,):
+    worksheet['B1'] = 'Difficulty Level'
+    for i in range(2,17):worksheet['B'+str(i)] = 'Easy'
+    worksheet['C1'] = 'Highest Score'
+    worksheet['D1'] = 'Difficulty Level'
+    for i in range(2,17):worksheet['D'+str(i)] = 'Medium'
+    worksheet['E1'] = 'Highest Score'
+    worksheet['F1'] = 'Difficulty Level'
+    for i in range(2,17):worksheet['F'+str(i)] = 'Hard'
+    worksheet['G1'] = 'Highest Score'
+    worksheet['I1'] = 'Last Played Level'
+    col = 'A'
+    row = 2
+    for i in range(15):
+        # Write data to the worksheet
+        # A
+        worksheet[col+str(row)] = str(row)+"x"+str(row)
+        # if data not stored in worksheet then write 0 
+        # C
+        if (worksheet[chr(ord(col) + 2)+str(row)].value) == None:
+            worksheet[chr(ord(col) + 2)+str(row)] = 0
+        # E
+        if (worksheet[chr(ord(col) + 4)+str(row)].value) == None:
+            worksheet[chr(ord(col) + 4)+str(row)] = 0
+        # G
+        if (worksheet[chr(ord(col) + 6)+str(row)].value) == None:
+            worksheet[chr(ord(col) + 6)+str(row)] = 0
+        row = row + 1
+
+def Column_difficulty(difficulty):
+    if difficulty == 1:
+        return 'G'
+    elif difficulty == 2:
+        return 'E'
+    elif difficulty == 3:
+        return 'C'
+    elif difficulty == 2048:
+        return 'H'
+
+def max_arr(arr):
+    max_n = 0
+    for i in arr:
+        for j in i:
+            if j > max_n: max_n = j
+    return max_n
+
+def add_data(arr, size, difficulty, filename, workbook, worksheet):    
+    # Find Max number from the list
+    max_n = max_arr(arr)
+    
+    # Set in which Column we add Score 
+    col = Column_difficulty(difficulty)
+    
+    # Write the data to the file
+    try:
+        if max_n > worksheet[col+str(size)].value:
+            worksheet[col+str(size)] = max_n
+            workbook.save(filename)
+    except Exception:
+        worksheet[col+str(size)] = max_n
+        workbook.save(filename)
+
+    # Open the workbook again to read the data
+    workbook = openpyxl.load_workbook(filename)
+
+    # Get the active worksheet
+    worksheet = workbook.active
+
+# Print data on console display
+def print_board(arr, size, difficulty, worksheet):
+    # Clear the screen
+    os.system("cls")
+    
+    # Display in which Column we Contain Score 
+    col = Column_difficulty(difficulty)
+
+    # Find max Number from List
+    max_num = max_arr(arr)
+    highscore = worksheet[col+str(size)].value
+    try:
+        if(highscore < max_num):highscore = max_num
+    except Exception:
+        highscore = max_num
+
+    # Read the value from cell
+    print("Highest Score is ",highscore)
+    print("Current Score is ",max_num)
+
+    # Print the game board
+    # ╔═══════════════╦═══════════════╦═══════════════╦═══════════════╗
+    print("╔"+"═"*15,end="")
+    for i in range(len(arr)-1):
+        print("╦"+"═"*15,end="")
+    print("╗")
+    # Print single line
+    for i in range(len(arr)):
+        # ║               ║               ║               ║               ║
+        print("║",end="")
+        for j in range(len(arr)):
+            print("\t\t║",end="")
+        print()
+        # ║       x       ║       x       ║       x       ║       x       ║
+        for j in range(len(arr)):
+            print("║\t",end="")
+            print('',end="") if arr[i][j] == 0 else print(str(arr[i][j]),end="")
+            print("\t",end="")
+        print("║")
+        # ║               ║               ║               ║               ║
+        print("║",end="")
+        for j in range(len(arr)):
+            print("\t\t║",end="")
+        print()
+        # ╠═══════════════╬═══════════════╬═══════════════╬═══════════════╣
+        if not(i==len(arr)-1):
+            print("╠"+"═"*15,end="")
+            for i in range(len(arr)-1):
+                print("╬"+"═"*15,end="")
+            print("╣")
+    # ╚═══════════════╩═══════════════╩═══════════════╩═══════════════╝
+    print("╚"+"═"*15,end="")
+    for i in range(len(arr)-1):
+        print("╩"+"═"*15,end="")
+    print("╝")
+
 def main():
     # Create File to Store Data
     filename = 'data.xlsx'
     
+    # Create Excel file to Store the data
     create_file(filename)
 
     # Open the existing or newly created workbook
@@ -192,25 +281,15 @@ def main():
     # Get the active worksheet
     worksheet = workbook.active
     
-    worksheet['B1'] = 'Difficulty Level'
-    worksheet['C1'] = 'Highest Score'
-    col = 'A'
-    row = 2
-    for i in range(15):
-        # Write data to the worksheet
-        # A
-        worksheet[col+str(row)] = str(row)+"x"+str(row)
-        # C
-        if (worksheet[chr(ord(col) + 2)+str(row)].value) == None:
-            worksheet[chr(ord(col) + 2)+str(row)] = 0
-        if (worksheet[chr(ord(col) + 2)+str(row)].value) > 0:
-            pass
-        else:
-            worksheet[chr(ord(col) + 2)+str(row)] = 0
-        row = row + 1
+    # set default data into the workbook
+    default_workbook(worksheet)
+
     # Save the workbook
     workbook.save(filename)
     
+    # Clear the screen
+    os.system("cls")
+
     # Set size of the array
     size = 0
     while size < 2 or size > 17:
@@ -222,7 +301,7 @@ def main():
     difficulty = 0
     while difficulty not in [1, 2, 3, 2048]:
         try:
-            difficulty = int(input("Enter the Level of difficulty of the game: \n1 : Hard\n2 : Medium\n3 : Easy\n\n"))
+            difficulty = int(input("\n1 : Hard\n2 : Medium\n3 : Easy\nEnter the Level of difficulty of the game: "))
             if difficulty in [1, 2, 3, 2048]:
                 break
             else:
@@ -230,29 +309,28 @@ def main():
         except ValueError:
             print("Invalid input. Please enter a valid number.")
     print(f"Selected difficulty: {difficulty}")
-
-    # Add the difficulty in Excel file
-    
     # B
     for i in range(15):
-        if difficulty == 1: d = 'High'
+        if difficulty == 1: d = 'Hard'
         elif difficulty == 2: d = 'Medium'
-        elif difficulty == 3: d = 'Low'
-        else: d = 'Unknown'
-        worksheet['B'+str(size)].value = d
+        elif difficulty == 3: d = 'Easy'
+        else: d = 'Special'
+        # Store Last Played Game's Difficulty Level in Excel
+        worksheet['I'+str(size)].value = d
         workbook.save(filename)
 
     # Set the array (i.e., if size = 3, then 'arr' makes a 3x3 empty (0) array)
     arr = np.zeros(size*size, dtype=np.int32).reshape(size, size)
 
     new_var(arr, size,difficulty)
-    print_board(arr)
+    print_board(arr, size, difficulty, worksheet)
 
     while True:
         if (check(arr) or check_Horizontal(arr) or check_Vertical(arr)):
+            # Add data into Excel file
+            add_data(arr, size, difficulty, filename, workbook, worksheet)
             if win(arr):
-                os.system("cls")
-                print_board(arr)
+                print_board(arr, size, difficulty, worksheet)
                 print("╔═══╗╔═══╗╔═╗─╔╗╔═══╗╔═══╗╔═══╗╔════╗╔╗─╔╗╔╗───╔═══╗╔════╗╔══╗╔═══╗╔═╗─╔╗╔═══╗")
                 print("║╔═╗║║╔═╗║║║╚╗║║║╔═╗║║╔═╗║║╔═╗║║╔╗╔╗║║║─║║║║───║╔═╗║║╔╗╔╗║╚╣─╝║╔═╗║║║╚╗║║║╔═╗║")
                 print("║║─╚╝║║─║║║╔╗╚╝║║║─╚╝║╚═╝║║║─║║╚╝║║╚╝║║─║║║║───║║─║║╚╝║║╚╝─║║─║║─║║║╔╗╚╝║║╚══╗")
@@ -261,30 +339,6 @@ def main():
                 print("╚═══╝╚═══╝╚╝─╚═╝╚═══╝╚╝╚═╝╚╝─╚╝──╚╝──╚═══╝╚═══╝╚╝─╚╝──╚╝──╚══╝╚═══╝╚╝─╚═╝╚═══╝")
                 break
             
-            max_n = 0
-            for i in arr:
-                for j in i:
-                    if j > max_n: max_n = j
-
-            # Write the data to the file
-            try:
-                if max_n > worksheet['C'+str(size)].value:
-                    worksheet['C'+str(size)] = max_n
-                    workbook.save(filename)
-            except Exception:
-                worksheet['C'+str(size)] = max_n
-                workbook.save(filename)
-
-            # Open the workbook again to read the data
-            workbook = openpyxl.load_workbook(filename)
-
-            # Get the active worksheet
-            worksheet = workbook.active
-
-            # Read the value from cell B3
-            print("Highest Score is ",worksheet['C'+str(size)].value)
-            print("Current Score is ",max_n)
-
             key = keyboard.read_key().lower()
             if key == "w" or key == "up":
                 bottom_to_top(arr, size)
@@ -303,10 +357,8 @@ def main():
             time.sleep(0.2)
             # Create a new variable
             new_var(arr, size, difficulty)
-            # Clear the screen
-            os.system("cls")
             # Print the updated box
-            print_board(arr)
+            print_board(arr, size, difficulty, worksheet)
         else:
             print("╔╗──╔╗╔═══╗╔╗─╔╗   ╔╗───╔═══╗╔═══╗╔═══╗   ╔════╗╔╗─╔╗╔═══╗   ╔═══╗╔═══╗╔═╗╔═╗╔═══╗")
             print("║╚╗╔╝║║╔═╗║║║─║║   ║║───║╔═╗║║╔═╗║║╔══╝   ║╔╗╔╗║║║─║║║╔══╝   ║╔═╗║║╔═╗║║║╚╝║║║╔══╝")
