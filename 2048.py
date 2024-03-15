@@ -213,7 +213,7 @@ def add_data(arr, size, difficulty, filename, workbook, worksheet):
     worksheet = workbook.active
 
 # Print data on console display
-def print_board(arr, size, difficulty, worksheet):
+def print_board(arr, size, difficulty, worksheet, theme):
     # Clear the screen
     os.system("cls")
     
@@ -233,39 +233,33 @@ def print_board(arr, size, difficulty, worksheet):
     print("Current Score is ",max_num)
 
     # Print the game board
-    # ╔═══════════════╦═══════════════╦═══════════════╦═══════════════╗
-    print("╔"+"═"*15,end="")
+    print("╔"+"─"*15,end="") if theme == 1 else print("╔"+"═"*15,end="")
     for i in range(len(arr)-1):
-        print("╦"+"═"*15,end="")
+        print("╦"+"─"*15,end="") if theme == 1 else print("╦"+"═"*15,end="")
     print("╗")
     # Print single line
     for i in range(len(arr)):
-        # ║               ║               ║               ║               ║
-        print("║",end="")
+        print("│",end="") if theme == 1 else print("║",end="")
         for j in range(len(arr)):
-            print("\t\t║",end="")
+            print("\t\t│",end="") if theme == 1 else print("\t\t║",end="")
         print()
-        # ║       x       ║       x       ║       x       ║       x       ║
         for j in range(len(arr)):
-            print("║\t",end="")
+            print("│\t",end="")  if theme == 1 else print("║\t",end="")
             print('',end="") if arr[i][j] == 0 else print(str(arr[i][j]),end="")
             print("\t",end="")
-        print("║")
-        # ║               ║               ║               ║               ║
-        print("║",end="")
+        print("│") if theme == 1 else print("║")
+        print("│",end="") if theme == 1 else print("║",end="")
         for j in range(len(arr)):
-            print("\t\t║",end="")
+            print("\t\t│",end="") if theme == 1 else print("\t\t║",end="")
         print()
-        # ╠═══════════════╬═══════════════╬═══════════════╬═══════════════╣
         if not(i==len(arr)-1):
-            print("╠"+"═"*15,end="")
+            print("╠"+"─"*15,end="") if theme == 1 else print("╠"+"═"*15,end="")
             for i in range(len(arr)-1):
-                print("╬"+"═"*15,end="")
+                print("╬"+"─"*15,end="") if theme == 1 else print("╬"+"═"*15,end="")
             print("╣")
-    # ╚═══════════════╩═══════════════╩═══════════════╩═══════════════╝
-    print("╚"+"═"*15,end="")
+    print("╚"+"─"*15,end="") if theme == 1 else print("╚"+"═"*15,end="")
     for i in range(len(arr)-1):
-        print("╩"+"═"*15,end="")
+        print("╩"+"─"*15,end="") if theme == 1 else print("╩"+"═"*15,end="")
     print("╝")
 
 def main():
@@ -319,18 +313,30 @@ def main():
         worksheet['I'+str(size)].value = d
         workbook.save(filename)
 
+    while True if input("\nDo you want to change Theme\ntype 'yes' if you want : ") == 'yes' else False:
+        # Clear the screen
+        os.system("cls")
+        a = input('Select Theme\n1 : Single Line\t\t2 : Double line\n╔─────────╗\t\t╔═════════╗\n│         │\t\t║         ║\n│         │\t\t║         ║\n│         │\t\t║         ║\n╚─────────╝\t\t╚═════════╝\n')
+        if a == '1':
+            theme = 1
+            break
+        elif a == '2':
+            theme = 2
+            break
+        else:print("Invalid input. Please enter 1 or 2.")
+
     # Set the array (i.e., if size = 3, then 'arr' makes a 3x3 empty (0) array)
     arr = np.zeros(size*size, dtype=np.int32).reshape(size, size)
 
-    new_var(arr, size,difficulty)
-    print_board(arr, size, difficulty, worksheet)
+    new_var(arr, size, difficulty)
+    print_board(arr, size, difficulty, worksheet, theme)
 
     while True:
         if (check(arr) or check_Horizontal(arr) or check_Vertical(arr)):
             # Add data into Excel file
             add_data(arr, size, difficulty, filename, workbook, worksheet)
             if win(arr):
-                print_board(arr, size, difficulty, worksheet)
+                print_board(arr, size, difficulty, worksheet, theme)
                 print("╔═══╗╔═══╗╔═╗─╔╗╔═══╗╔═══╗╔═══╗╔════╗╔╗─╔╗╔╗───╔═══╗╔════╗╔══╗╔═══╗╔═╗─╔╗╔═══╗")
                 print("║╔═╗║║╔═╗║║║╚╗║║║╔═╗║║╔═╗║║╔═╗║║╔╗╔╗║║║─║║║║───║╔═╗║║╔╗╔╗║╚╣─╝║╔═╗║║║╚╗║║║╔═╗║")
                 print("║║─╚╝║║─║║║╔╗╚╝║║║─╚╝║╚═╝║║║─║║╚╝║║╚╝║║─║║║║───║║─║║╚╝║║╚╝─║║─║║─║║║╔╗╚╝║║╚══╗")
@@ -351,14 +357,17 @@ def main():
             elif key == "x":
                 break
             else:
-                print('Invalid key')
+                # Clear the screen
+                os.system("cls")
+                print_board(arr, size, difficulty, worksheet, theme)
+                print('Invalid Key')
                 continue
             # Set delay for the next move
             time.sleep(0.2)
             # Create a new variable
             new_var(arr, size, difficulty)
             # Print the updated box
-            print_board(arr, size, difficulty, worksheet)
+            print_board(arr, size, difficulty, worksheet, theme)
         else:
             print("╔╗──╔╗╔═══╗╔╗─╔╗   ╔╗───╔═══╗╔═══╗╔═══╗   ╔════╗╔╗─╔╗╔═══╗   ╔═══╗╔═══╗╔═╗╔═╗╔═══╗")
             print("║╚╗╔╝║║╔═╗║║║─║║   ║║───║╔═╗║║╔═╗║║╔══╝   ║╔╗╔╗║║║─║║║╔══╝   ║╔═╗║║╔═╗║║║╚╝║║║╔══╝")
