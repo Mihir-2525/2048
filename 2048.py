@@ -284,98 +284,124 @@ def main():
     # Clear the screen
     os.system("cls")
 
-    # Set size of the array
-    size = 0
-    while size < 2 or size > 17:
-        try:
-            size = int(input("Enter the number of the box you want: "))
-        except ValueError:
-            print("Invalid input. Please enter a valid Size.")
-    # Set Difficulty
-    difficulty = 0
-    while difficulty not in [1, 2, 3, 2048]:
-        try:
-            difficulty = int(input("\n1 : Hard\n2 : Medium\n3 : Easy\nEnter the Level of difficulty of the game: "))
-            if difficulty in [1, 2, 3, 2048]:
-                break
-            else:
-                print("Invalid input. Please enter 1, 2, or 3.")
-        except ValueError:
-            print("Invalid input. Please enter a valid number.")
-    print(f"Selected difficulty: {difficulty}")
-    # B
-    for i in range(15):
-        if difficulty == 1: d = 'Hard'
-        elif difficulty == 2: d = 'Medium'
-        elif difficulty == 3: d = 'Easy'
-        else: d = 'Special'
-        # Store Last Played Game's Difficulty Level in Excel
-        worksheet['I'+str(size)].value = d
-        workbook.save(filename)
-
-    while True if input("\nDo you want to change Theme\ntype 'yes' if you want : ") == 'yes' else False:
+    # Instructions
+    print("Welcome to the 2048 Game Console Edition!")
+    print("This is a Python implementation of the popular game 2048.")
+    print("Enjoy sliding tiles and reaching the 2048 tile!\n")
+    print("Instructions:\n")
+    print("- Use arrow keys (up, down, left, right) or 'W', 'S', 'A', 'D' keys to move tiles.")
+    print("- Press 'X' to exit the game.")
+    print("- We provide Two Themes:")
+    print("  1 : Single Line\t\t2 : Double line\n  ╔─────────╗\t\t  ╔═════════╗\n  │         │\t\t  ║         ║\n  │         │\t\t  ║         ║\n  │         │\t\t  ║         ║\n  ╚─────────╝\t\t  ╚═════════╝\n")
+    print("Thank you for playing 2048 Game Console Edition!\nHope you enjoyed the game. Have a great day!\n")
+    input("Press enter to continue")
+    time.sleep(1)
+    
+    # ask to Replay
+    while True:
         # Clear the screen
         os.system("cls")
-        a = input('Select Theme\n1 : Single Line\t\t2 : Double line\n╔─────────╗\t\t╔═════════╗\n│         │\t\t║         ║\n│         │\t\t║         ║\n│         │\t\t║         ║\n╚─────────╝\t\t╚═════════╝\n')
-        if a == '1':
-            theme = 1
-            break
-        elif a == '2':
-            theme = 2
-            break
-        else:print("Invalid input. Please enter 1 or 2.")
+        
+        # Set size of the array
+        size = 0
+        while size < 2 or size > 17:
+            try:
+                size = int(input("Please enter the size of the game board you want (e.g., 4 for a 4x4 board): "))
+            except ValueError:
+                print("Invalid input. Please enter a valid Size.\n")
+        # Set Difficulty
+        difficulty = 0
+        while difficulty not in [1, 2, 3, 2048]:
+            try:
+                difficulty = int(input("\n1 : Hard\n2 : Medium\n3 : Easy\nEnter the Level of difficulty of the game: "))
+                if difficulty in [1, 2, 3, 2048]:
+                    break
+                else:
+                    print("Invalid input. Please enter 1, 2, or 3.")
+            except ValueError:
+                print("Invalid input. Please enter a valid number.")
+        print(f"Selected difficulty: {difficulty}")
+        # B
+        for i in range(15):
+            if difficulty == 1: d = 'Hard'
+            elif difficulty == 2: d = 'Medium'
+            elif difficulty == 3: d = 'Easy'
+            else: d = 'Special'
+            # Store Last Played Game's Difficulty Level in Excel
+            worksheet['I'+str(size)].value = d
+            workbook.save(filename)
 
-    # Set the array (i.e., if size = 3, then 'arr' makes a 3x3 empty (0) array)
-    arr = np.zeros(size*size, dtype=np.int32).reshape(size, size)
+        # Set Theme
+        theme = 1
+        while True if input("\nDo you want to change Theme\ntype 'yes' if you want : ") == 'yes' else False:
+            # Clear the screen
+            os.system("cls")
+            a = input('Select Theme\n1 : Single Line\t\t2 : Double line\n╔─────────╗\t\t╔═════════╗\n│         │\t\t║         ║\n│         │\t\t║         ║\n│         │\t\t║         ║\n╚─────────╝\t\t╚═════════╝\n')
+            if a == '1':
+                theme = 1
+                break
+            elif a == '2':
+                theme = 2
+                break
+            else:print("Invalid input. Please enter 1 or 2.")
 
-    new_var(arr, size, difficulty)
-    print_board(arr, size, difficulty, worksheet, theme)
+        # Set the array (i.e., if size = 3, then 'arr' makes a 3x3 empty (0) array)
+        arr = np.zeros(size*size, dtype=np.int32).reshape(size, size)
 
-    while True:
-        if (check(arr) or check_Horizontal(arr) or check_Vertical(arr)):
-            # Add data into Excel file
-            add_data(arr, size, difficulty, filename, workbook, worksheet)
-            if win(arr):
+        new_var(arr, size, difficulty)
+        print_board(arr, size, difficulty, worksheet, theme)
+
+        while True:
+            if (check(arr) or check_Horizontal(arr) or check_Vertical(arr)):
+                # Add data into Excel file
+                add_data(arr, size, difficulty, filename, workbook, worksheet)
+                if win(arr):
+                    print_board(arr, size, difficulty, worksheet, theme)
+                    print("╔═══╗╔═══╗╔═╗─╔╗╔═══╗╔═══╗╔═══╗╔════╗╔╗─╔╗╔╗───╔═══╗╔════╗╔══╗╔═══╗╔═╗─╔╗╔═══╗")
+                    print("║╔═╗║║╔═╗║║║╚╗║║║╔═╗║║╔═╗║║╔═╗║║╔╗╔╗║║║─║║║║───║╔═╗║║╔╗╔╗║╚╣─╝║╔═╗║║║╚╗║║║╔═╗║")
+                    print("║║─╚╝║║─║║║╔╗╚╝║║║─╚╝║╚═╝║║║─║║╚╝║║╚╝║║─║║║║───║║─║║╚╝║║╚╝─║║─║║─║║║╔╗╚╝║║╚══╗")
+                    print("║║─╔╗║║─║║║║╚╗║║║║╔═╗║╔╗╔╝║╚═╝║──║║──║║─║║║║─╔╗║╚═╝║──║║───║║─║║─║║║║╚╗║║╚══╗║")
+                    print("║╚═╝║║╚═╝║║║─║║║║╚╩═║║║║╚╗║╔═╗║──║║──║╚═╝║║╚═╝║║╔═╗║──║║──╔╣─╗║╚═╝║║║─║║║║╚═╝║")
+                    print("╚═══╝╚═══╝╚╝─╚═╝╚═══╝╚╝╚═╝╚╝─╚╝──╚╝──╚═══╝╚═══╝╚╝─╚╝──╚╝──╚══╝╚═══╝╚╝─╚═╝╚═══╝")
+                    break
+
+                key = keyboard.read_key().lower()
+                if key == "w" or key == "up":
+                    bottom_to_top(arr, size)
+                elif key == "s" or key == "down":
+                    top_to_bottom(arr, size)
+                elif key == "a" or key == "left":
+                    right_to_left(arr, size)
+                elif key == "d" or key == "right":
+                    left_to_right(arr, size)
+                elif key == "x":
+                    break
+                else:
+                    # Clear the screen
+                    os.system("cls")
+                    print_board(arr, size, difficulty, worksheet, theme)
+                    print('Invalid Key')
+                    continue
+                # Set delay for the next move
+                time.sleep(0.2)
+                # Create a new variable
+                new_var(arr, size, difficulty)
+                # Print the updated box
                 print_board(arr, size, difficulty, worksheet, theme)
-                print("╔═══╗╔═══╗╔═╗─╔╗╔═══╗╔═══╗╔═══╗╔════╗╔╗─╔╗╔╗───╔═══╗╔════╗╔══╗╔═══╗╔═╗─╔╗╔═══╗")
-                print("║╔═╗║║╔═╗║║║╚╗║║║╔═╗║║╔═╗║║╔═╗║║╔╗╔╗║║║─║║║║───║╔═╗║║╔╗╔╗║╚╣─╝║╔═╗║║║╚╗║║║╔═╗║")
-                print("║║─╚╝║║─║║║╔╗╚╝║║║─╚╝║╚═╝║║║─║║╚╝║║╚╝║║─║║║║───║║─║║╚╝║║╚╝─║║─║║─║║║╔╗╚╝║║╚══╗")
-                print("║║─╔╗║║─║║║║╚╗║║║║╔═╗║╔╗╔╝║╚═╝║──║║──║║─║║║║─╔╗║╚═╝║──║║───║║─║║─║║║║╚╗║║╚══╗║")
-                print("║╚═╝║║╚═╝║║║─║║║║╚╩═║║║║╚╗║╔═╗║──║║──║╚═╝║║╚═╝║║╔═╗║──║║──╔╣─╗║╚═╝║║║─║║║║╚═╝║")
-                print("╚═══╝╚═══╝╚╝─╚═╝╚═══╝╚╝╚═╝╚╝─╚╝──╚╝──╚═══╝╚═══╝╚╝─╚╝──╚╝──╚══╝╚═══╝╚╝─╚═╝╚═══╝")
-                break
-            
-            key = keyboard.read_key().lower()
-            if key == "w" or key == "up":
-                bottom_to_top(arr, size)
-            elif key == "s" or key == "down":
-                top_to_bottom(arr, size)
-            elif key == "a" or key == "left":
-                right_to_left(arr, size)
-            elif key == "d" or key == "right":
-                left_to_right(arr, size)
-            elif key == "x":
-                break
             else:
-                # Clear the screen
-                os.system("cls")
-                print_board(arr, size, difficulty, worksheet, theme)
-                print('Invalid Key')
-                continue
-            # Set delay for the next move
-            time.sleep(0.2)
-            # Create a new variable
-            new_var(arr, size, difficulty)
-            # Print the updated box
-            print_board(arr, size, difficulty, worksheet, theme)
-        else:
-            print("╔╗──╔╗╔═══╗╔╗─╔╗   ╔╗───╔═══╗╔═══╗╔═══╗   ╔════╗╔╗─╔╗╔═══╗   ╔═══╗╔═══╗╔═╗╔═╗╔═══╗")
-            print("║╚╗╔╝║║╔═╗║║║─║║   ║║───║╔═╗║║╔═╗║║╔══╝   ║╔╗╔╗║║║─║║║╔══╝   ║╔═╗║║╔═╗║║║╚╝║║║╔══╝")
-            print("╚╗╚╝╔╝║║─║║║║─║║   ║║───║║─║║║╚══╗║╚══╗   ╚╝║║╚╝║╚═╝║║╚══╗   ║║─╚╝║║─║║║╔╗╔╗║║╚══╗")
-            print("─╚╗╔╝─║║─║║║║─║║   ║║─╔╗║║─║║╚══╗║║╔══╝   ──║║──║╔═╗║║╔══╝   ║║╔═╗║╚═╝║║║║║║║║╔══╝")
-            print("──║║──║╚═╝║║╚═╝║   ║╚═╝║║╚═╝║║╚═╝║║╚══╗   ──║║──║║─║║║╚══╗   ║╚╩═║║╔═╗║║║║║║║║╚══╗")
-            print("──╚╝──╚═══╝╚═══╝   ╚═══╝╚═══╝╚═══╝╚═══╝   ──╚╝──╚╝─╚╝╚═══╝   ╚═══╝╚╝─╚╝╚╝╚╝╚╝╚═══╝")
-            break
+                print("╔╗──╔╗╔═══╗╔╗─╔╗   ╔╗───╔═══╗╔═══╗╔═══╗   ╔════╗╔╗─╔╗╔═══╗   ╔═══╗╔═══╗╔═╗╔═╗╔═══╗")
+                print("║╚╗╔╝║║╔═╗║║║─║║   ║║───║╔═╗║║╔═╗║║╔══╝   ║╔╗╔╗║║║─║║║╔══╝   ║╔═╗║║╔═╗║║║╚╝║║║╔══╝")
+                print("╚╗╚╝╔╝║║─║║║║─║║   ║║───║║─║║║╚══╗║╚══╗   ╚╝║║╚╝║╚═╝║║╚══╗   ║║─╚╝║║─║║║╔╗╔╗║║╚══╗")
+                print("─╚╗╔╝─║║─║║║║─║║   ║║─╔╗║║─║║╚══╗║║╔══╝   ──║║──║╔═╗║║╔══╝   ║║╔═╗║╚═╝║║║║║║║║╔══╝")
+                print("──║║──║╚═╝║║╚═╝║   ║╚═╝║║╚═╝║║╚═╝║║╚══╗   ──║║──║║─║║║╚══╗   ║╚╩═║║╔═╗║║║║║║║║╚══╗")
+                print("──╚╝──╚═══╝╚═══╝   ╚═══╝╚═══╝╚═══╝╚═══╝   ──╚╝──╚╝─╚╝╚═══╝   ╚═══╝╚╝─╚╝╚╝╚╝╚╝╚═══╝")
+                break
+
+        time.sleep(2)
+        print("Do you want to Replay\nPress Enter key to continue \nPress anything to Exit Game")
+        Replay = keyboard.read_key().lower()
+        if Replay != "enter":break
+        else:pass 
 
 if __name__ == "__main__":
     main()
